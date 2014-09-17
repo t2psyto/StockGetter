@@ -89,7 +89,7 @@ def main():
     list_of_dict_finance = []
     cnt = 0
     for ccode in ccodes:
-        print ccode
+        #print ccode
         if is_test == 1 and cnt > 5:
             break
         try:
@@ -115,6 +115,7 @@ def main():
 
     """Quoteの取得"""
     cnt = 0
+    commit_limit = 100
     list_of_dict_stock = []
     default_start_date = datetime.date(2000,1,1)
     default_end_date = datetime.date.today()
@@ -158,8 +159,15 @@ def main():
             db.UpdateStockCondition(ccode,0,default_start_date.strftime("%Y-%m-%d"),end_date.strftime("%Y-%m-%d"))
             print "Error in Quote Data ", ccode
 
-    db.InsertStockData(list_of_dict_stock)
-    db.Commit()
+        if cnt >= commit_limit:
+            db.InsertStockData(list_of_dict_stock)
+            db.Commit()
+            cnt = 0
+            list_of_dict_stock = []
+
+    if len(list_of_dict_stock) > 0:
+        db.InsertStockData(list_of_dict_stock)
+        db.Commit()
 
     db.close()
 
