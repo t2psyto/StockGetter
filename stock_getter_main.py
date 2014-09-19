@@ -115,7 +115,7 @@ def main():
 
     """Quoteの取得"""
     cnt = 0
-    commit_limit = 100
+    commit_limit = 10
     list_of_dict_stock = []
     default_start_date = datetime.date(2000,1,1)
     default_end_date = datetime.date.today()

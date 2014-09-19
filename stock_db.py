@@ -91,6 +91,35 @@ class StockDB:
                                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8  ;'''
         self._cur.execute(sql)
 
+
+    def create_fs_db(self):
+        sql = '''CREATE TABLE IF NOT EXISTS stock_fs_data(
+                                 ccode int(11),
+                                 settling_day datetime,
+                                 procedure_m varchar(32) ,
+                                 published_day datetime ,
+                                 settling_months varchar(32) ,
+                                 total_sales bigint  ,
+                                 operating_profit bigint  ,
+                                 ordinary_profit bigint ,
+                                 current_net_income bigint ,
+                                 eps decimal(12,2) ,
+                                 income_per_stock decimal(12,2) ,
+                                 allotment_per_stock decimal(12,2) ,
+                                 allotment_kind varchar(32) ,
+                                 bps decimal(12,2) ,
+                                 all_issued_stock bigint ,
+                                 total_asset bigint ,
+                                 owned_capital bigint ,
+                                 fund bigint ,
+                                 dept_with_interest bigint ,
+                                 capital_to_asset_ratio decimal(12,2) ,
+                                 roa decimal(12,2) ,
+                                 updatetime timestamp,
+                                 PRIMARY KEY(ccode,settling_day)
+                                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8  ;'''
+        self._cur.execute(sql)
+
     def GetDateBrandRefreshed(self):
         """
         Brandの更新日付を取得する。
@@ -176,6 +205,47 @@ class StockDB:
             self._cur.execute(sql,[cnt])
         except mysql.Error:
             print "Error Occured in update brand refreshed"
+
+    def InsertStockFSData(self,list_of_list=[]):
+        """
+
+        :param list:
+        :return:
+        """
+        if len(list_of_list) == 0:
+            return None
+        try:
+            sql = """REPLACE INTO stock_fs_data(ccode ,
+                                     settling_day ,
+                                     procedure_m ,
+                                     published_day  ,
+                                     settling_months  ,
+                                     total_sales   ,
+                                     operating_profit   ,
+                                     ordinary_profit  ,
+                                     current_net_income ,
+                                     eps ,
+                                     income_per_stock ,
+                                     allotment_per_stock ,
+                                     allotment_kind  ,
+                                     bps  ,
+                                     all_issued_stock  ,
+                                     total_asset  ,
+                                     owned_capital  ,
+                                     fund  ,
+                                     dept_with_interest ,
+                                     capital_to_asset_ratio  ,
+                                     roa ) VALUES"""
+            ss = ""
+            params_list = []
+            for list in list_of_list:
+                ss += "(%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ,%s ),"
+                [params_list.append(x) for x in list]
+            sql += ss[0:-1]
+            self._cur.execute(sql,params_list)
+
+        except mysql.Error:
+            print "Error Occurred in insert "
 
     def InsertStockData(self,list_of_dict=[]):
         """
